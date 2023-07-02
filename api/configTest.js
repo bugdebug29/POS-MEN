@@ -2,7 +2,6 @@ const app = require( "express" )();
 const bodyParser = require( "body-parser" );
 const Datastore = require( "nedb" );
 
-app.use(bodyParser.json());
 module.exports = app;
 
 let configDB = new Datastore({
