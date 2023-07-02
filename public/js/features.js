@@ -25,6 +25,7 @@ let product_index = 0;
 let transaction_index;
 let host = 'localhost';
 let port = 5000;
+let img_path = "/uploads/"
 let api = 'http://' + host + ':' + port + '/api/';
 let dotInterval = setInterval(function () { $(".dot").text('.') }, 3000);
 let categories = [];
@@ -44,8 +45,9 @@ let start = moment().startOf('month');
 let end = moment();
 let start_date = moment(start).toDate();
 let end_date = moment(end).toDate();
-let by_till = 0;
+// let by_till = 0;
 let by_user = 0;
+let by_store = 0;
 let by_status = 1;
 
 
@@ -125,14 +127,16 @@ if (auth == undefined) {
         }
     }
 
-    $.get(api + 'users/user/' + user._id, function (data) {
+    $.get(api + 'users/user/' + JSON.parse(user)._id, function (data) {
         user = data;
+        console.log('user fetched: ', data);
         $('#loggedin-user').text(user.fullname);
     });
 
 
     $.get(api + 'settings/get', function (data) {
         settings = data.settings;
+        console.log('settings: ' , JSON.stringify(settings));
     });
 
 
@@ -210,7 +214,7 @@ if (auth == undefined) {
                     let item_info = `<div class="col-lg-2 box ${item.category}"
                                 onclick="$(this).addToCart(${item._id}, ${item.quantity}, ${item.stock})">
                             <div class="widget-panel widget-style-2 ">                    
-                            <div id="image"><img src="${item.img == "" ? "/images/default.jpg" : img_path + item.img}" id="product_img" alt=""></div>                    
+                            <div class="image"><img src="${item.img == "" ? "/images/default.jpg" : img_path + item.img}" class="product_img" alt=""></div>                    
                                         <div class="text-muted m-t-5 text-center">
                                         <div class="name" id="product_name">${item.name}</div> 
                                         <span class="sku">${item.sku}</span>
@@ -462,21 +466,21 @@ if (auth == undefined) {
                             $('<div>', { class: 'input-group' }).append(
                                 $('<div>', { class: 'input-group-btn btn-xs' }).append(
                                     $('<button>', {
-                                        class: 'btn btn-default btn-xs',
+                                        class: 'btn btn-default btn-xs cart-item-btn',
                                         onclick: '$(this).qtDecrement(' + index + ')'
                                     }).append(
                                         $('<i>', { class: 'fa fa-minus' })
                                     )
                                 ),
                                 $('<input>', {
-                                    class: 'form-control',
+                                    class: 'form-control cart-input',
                                     type: 'number',
                                     value: data.quantity,
                                     onInput: '$(this).qtInput(' + index + ')'
                                 }),
                                 $('<div>', { class: 'input-group-btn btn-xs' }).append(
                                     $('<button>', {
-                                        class: 'btn btn-default btn-xs',
+                                        class: 'btn btn-default btn-xs cart-item-btn',
                                         onclick: '$(this).qtIncrement(' + index + ')'
                                     }).append(
                                         $('<i>', { class: 'fa fa-plus' })
@@ -632,7 +636,7 @@ if (auth == undefined) {
 
             let discount = $("#inputDiscount").val();
             let customer = JSON.parse($("#customer").val());
-            let date = moment(currentTime).format("YYYY-MM-DD HH:mm:ss");
+            let date = moment(currentTime).format("DD-MM-YYYY");
             let paid = $("#payment").val() == "" ? "" : parseFloat($("#payment").val()).toFixed(2);
             let change = $("#change").text() == "" ? "" : parseFloat($("#change").text()).toFixed(2);
             let refNumber = $("#refNumber").val();
@@ -811,11 +815,12 @@ if (auth == undefined) {
                 change: change,
                 _id: orderNumber,
                 till: platform.till,
-                mac: platform.mac,
                 user: user.fullname,
-                user_id: user._id
+                user_id: user._id,
+                store: settings.store
             }
 
+            console.log('transaction data: ', data);
 
             $.ajax({
                 url: api + 'new',
@@ -1498,7 +1503,7 @@ if (auth == undefined) {
 
                 product_list += `<tr>
                                     <td><img id="`+ product._id + `"></td>
-                                    <td><img style="max-height: 50px; max-width: 50px; border: 1px solid #ddd;" src="${product.img == "" ? "/images/default.jpg" : img_path + product.img}" id="product_img"></td>
+                                    <td><img style="max-height: 50px; max-width: 50px; border: 1px solid #ddd;" src="${product.img == "" ? "/images/default.jpg" : img_path + product.img}" class="product_img"></td>
                                     <td>${product.name}</td>
                                     <td>${settings.symbol}${product.price}</td>
                                     <td>${product.stock == 1 ? product.quantity : 'N/A'}</td>
@@ -1612,16 +1617,10 @@ if (auth == undefined) {
         $('#settings_form').on('submit', function (e) {
             e.preventDefault();
             let formData = $(this).serializeObject();
-            let mac_address;
-
+           
             api = 'http://' + host + ':' + port + '/api/';
 
-            macaddress.one(function (err, mac) {
-                mac_address = mac;
-            });
-
             formData['app'] = $('#app').find('option:selected').text();
-            formData['mac'] = mac_address;
             formData['till'] = 1;
 
             $('#settings_form').append('<input type="hidden" name="app" value="' + formData.app + '" />');
@@ -1635,6 +1634,7 @@ if (auth == undefined) {
             }
             else {
                 localStorage.setItem('settings', JSON.stringify(formData));
+                console.log('formData: ' + formData, '  formData_json: ' + JSON.stringify(formData))
 
                 $(this).attr('action', api + 'settings/post');
                 $(this).attr('method', 'POST');
@@ -1644,7 +1644,8 @@ if (auth == undefined) {
                     contentType: 'application/json',
                     success: function (response) {
 
-                        ipcRenderer.send('app-reload', '');
+                        // ipcRenderer.send('app-reload', '');
+                        window.location.href = '/';
 
                     }, error: function (data) {
                         console.log(data);
@@ -1766,9 +1767,7 @@ if (auth == undefined) {
             if ($(this).find('option:selected').text() == 'Network Point of Sale Terminal') {
                 $('#net_settings_form').show(500);
                 $('#settings_form').hide(500);
-                macaddress.one(function (err, mac) {
-                    $("#mac").val(mac);
-                });
+
             }
             else {
                 $('#net_settings_form').hide(500);
@@ -1816,9 +1815,6 @@ if (auth == undefined) {
                 $("#ip").val(platform.ip);
                 $("#till").val(platform.till);
 
-                macaddress.one(function (err, mac) {
-                    $("#mac").val(mac);
-                });
 
                 $("#app option").filter(function () {
                     return $(this).text() == platform.app;
@@ -1924,6 +1920,7 @@ function loadTransactions() {
 
     let tills = [];
     let users = [];
+    let stores = [];
     let sales = 0;
     let transact = 0;
     let unique = 0;
@@ -1933,7 +1930,7 @@ function loadTransactions() {
 
     let counter = 0;
     let transaction_list = '';
-    let query = `by-date?start=${start_date}&end=${end_date}&user=${by_user}&status=${by_status}&till=${by_till}`;
+    let query = `by-date?start=${start_date}&end=${end_date}&user=${by_user}&status=${by_status}&store=${by_store}`;
 
 
     $.get(api + query, function (transactions) {
@@ -1966,16 +1963,20 @@ function loadTransactions() {
                     users.push(trans.user_id);
                 }
 
+                if (!stores.includes(trans.store)) {
+                    stores.push(trans.store);
+                }
+
                 counter++;
                 transaction_list += `<tr>
                                 <td>${trans.order}</td>
-                                <td class="nobr">${moment(trans.date).format('YYYY MMM DD hh:mm:ss')}</td>
+                                <td class="nobr">${moment(trans.date).format('DD MMM YYYY hh:mm:ss')}</td>
                                 <td>${settings.symbol + trans.total}</td>
                                 <td>${trans.paid == "" ? "" : settings.symbol + trans.paid}</td>
                                 <td>${trans.change ? settings.symbol + Math.abs(trans.change).toFixed(2) : ''}</td>
                                 <td>${trans.paid == "" ? "" : trans.payment_type == 0 ? "Cash" : 'Card'}</td>
-                                <td>${trans.till}</td>
                                 <td>${trans.user}</td>
+                                <td>${trans.store}</td>
                                 <td>${trans.paid == "" ? '<button class="btn btn-dark"><i class="fa fa-search-plus"></i></button>' : '<button onClick="$(this).viewTransaction(' + index + ')" class="btn btn-info"><i class="fa fa-search-plus"></i></button></td>'}</tr>
                     `;
 
@@ -2014,10 +2015,11 @@ function loadTransactions() {
                     loadSoldProducts();
 
 
-                    if (by_user == 0 && by_till == 0) {
+                    if (by_user == 0 && by_store == 0) {
 
                         userFilter(users);
-                        tillFilter(tills);
+                        // tillFilter(tills);
+                        storeFilter(stores);
                     }
 
 
@@ -2122,6 +2124,15 @@ function tillFilter(tills) {
 
 }
 
+function storeFilter(stores) {
+
+    $('#stores').empty();
+    $('#stores').append(`<option value="0">All</option>`);
+    stores.forEach(store => {
+        $('#stores').append(`<option value="${store}">${store}</option>`);
+    });
+
+}
 
 $.fn.viewTransaction = function (index) {
 
@@ -2271,6 +2282,10 @@ $('#users').change(function () {
     loadTransactions();
 });
 
+$('#stores').change(function () {
+    by_store = $(this).find('option:selected').val();
+    loadTransactions();
+});
 
 $('#reportrange').on('apply.daterangepicker', function (ev, picker) {
 
@@ -2350,7 +2365,8 @@ $('#quit').on('click', function () {
     }).then((result) => {
 
         if (result.value) {
-            ipcRenderer.send('app-quit', '');
+            // ipcRenderer.send('app-quit', '');
+            window.location.href = 'https://google.com';
         }
     });
 });

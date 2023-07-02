@@ -108,9 +108,14 @@
                 <div class="card-box"> 
                     <div class="row">               
                         <h3 class="col-md-2">Transactions</h3> 
-                        <div class="col-md-1">
+                        <!-- <div class="col-md-1">
                             <span>Till</span>
                             <select id="tills" class="form-control">                              
+                            </select>
+                        </div> -->
+                        <div class="col-md-2">
+                            <span>Store</span>
+                            <select id="stores" class="form-control">
                             </select>
                         </div>
                         <div class="col-md-2">
@@ -193,8 +198,9 @@
                                         <th>Paid</th>
                                         <th>Change</th>
                                         <th>Method</th>
-                                        <th>Till</th>
+                                        <!-- <th>Till</th> -->
                                         <th>Cashier</th>
+                                        <th>Store</th>
                                         <th>View</th>
                                     </tr>
                                 </thead>
@@ -223,7 +229,7 @@
                               <button data-toggle="modal" data-target="#newCustomer" class="btn btn-success"><i class="fa fa-plus"></i></button>
                           </div>
                       </div>
-                      <div class="input-group m-t-5">
+                      <!-- <div class="input-group m-t-5">
                           <form action="" id="searchBarCode">
                               <input type="text" required id="skuCode" name="skuCode" class="form-control" placeholder="Scan barcode or type the number then hit enter" aria-label="Recipient's username" aria-describedby="basic-addon2">
                               <input type="submit" style="display:none;">
@@ -231,7 +237,7 @@
                           <span class="input-group-addon" id="basic-addon2">
                               <i class="glyphicon glyphicon-ok"></i>
                           </span>
-                      </div>
+                      </div> -->
                   </div>
                   <div>
                       <table class="table m-0" id="cartTable">
@@ -298,7 +304,7 @@
               <div class="card-box">
                   <div class="row">
                       <div class="col-md-4">
-                          <input type="text" id="search" class="form-control" placeholder="Search product by name or sku">
+                          <input type="text" id="search" class="form-control" placeholder="Search Products by Name">
                       </div>
                       <div class="col-md-8">
                           <div class="" id="categories">
@@ -805,8 +811,8 @@
 
 
 
-<div id="orderModal" class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style="display: none;">
-    <div class="modal-dialog modal-sm">
+<div id="orderModal" class="modal fade bs-example-modal-sm" tabindex="-1" data-bs-backdrop="static" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-dialog-scrollable modal-sm">
         <div class="modal-content">
             <div class="modal-header">
                 <button class="btn btn-sm btn-default" onclick="$(this).print()">Print</button> <br> <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -954,6 +960,7 @@
 </script> -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+<!-- <script>moment.tz.setDefault("Asia/Kolkata");</script> -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.5/JsBarcode.all.min.js"></script>
@@ -973,10 +980,11 @@
 <script src="/plugins/dataTables/buttons.html5.min.js"></script>
 <script src="/plugins/dataTables/pdfmake.min.js"></script>
 <script src="/plugins/dataTables/vfs_fonts.js"></script>
-<!-- <script src="/plugins/jquery-ui/jquery-ui.min.js"></script>
+
+<script src="/plugins/jquery-ui/jquery-ui.min.js"></script>
 <script src="/plugins/jq-keyboard/jqkeyboard-min.js"></script>
 <script src="/plugins/jq-keyboard/jqk.layout.en.js"></script>
-<script src="/plugins/onscreen-keyboard/jquery.caret.min.js"></script> -->
+<script src="/plugins/onscreen-keyboard/jquery.caret.min.js"></script>
 
 <script src="/js/features.js"></script>
 <script src="/js/product-filter.js"></script>

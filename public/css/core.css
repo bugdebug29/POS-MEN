@@ -13,6 +13,18 @@ html {
   min-height: 100%;
   background: #ebeff2;
 }
+
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+
 h1,
 h2,
 h3,
@@ -604,6 +616,15 @@ textarea.form-control {
 .input-group-btn .btn-lg {
   padding: 10px 17px;
 }
+.input-group-btn .cart-item-btn {
+  padding: 8px;
+}
+
+.input-group .cart-input {
+  min-width: 45px;
+  text-align: center;
+}
+
 /* Labels */
 .label {
   font-weight: 600;

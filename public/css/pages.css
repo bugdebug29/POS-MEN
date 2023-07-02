@@ -27,14 +27,14 @@ color: #FFFFFF;
 }
 
 #parent .box {
-  margin-bottom: 10px;
+  margin: 10px 5px;
   text-align: center;
   display: block;
   cursor: pointer;
   border: 1px solid #f1f1f1;
 }
 
-#product_img {
+.product_img {
   max-height: 80px;
   border-radius: 50%;
   max-width: 100px;
@@ -52,8 +52,9 @@ color: #FFFFFF;
 
 .nobr  { white-space: nowrap;}
 
-#image {
+.image {
   height: 80px;
+  margin-top: 5px;
 }
 
 #print_list {
