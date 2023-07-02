@@ -56,7 +56,7 @@ app.get("/by-date", function(req, res) {
   let startDate = new Date(req.query.start);
   let endDate = new Date(req.query.end);
 
-  if(req.query.user == 0 && req.query.till == 0) {
+  if(req.query.user == 0 && req.query.store == 0) {
       transactionsDB.find(
         { $and: [{ date: { $gte: startDate.toJSON(), $lte: endDate.toJSON() }}, { status: parseInt(req.query.status) }] },
         function(err, docs) {
@@ -65,7 +65,7 @@ app.get("/by-date", function(req, res) {
       );
   }
 
-  if(req.query.user != 0 && req.query.till == 0) {
+  if(req.query.user != 0 && req.query.store == 0) {
     transactionsDB.find(
       { $and: [{ date: { $gte: startDate.toJSON(), $lte: endDate.toJSON() }}, { status: parseInt(req.query.status) }, { user_id: parseInt(req.query.user) }] },
       function(err, docs) {
@@ -74,18 +74,18 @@ app.get("/by-date", function(req, res) {
     );
   }
 
-  if(req.query.user == 0 && req.query.till != 0) {
+  if(req.query.user == 0 && req.query.store != 0) {
     transactionsDB.find(
-      { $and: [{ date: { $gte: startDate.toJSON(), $lte: endDate.toJSON() }}, { status: parseInt(req.query.status) }, { till: parseInt(req.query.till) }] },
+      { $and: [{ date: { $gte: startDate.toJSON(), $lte: endDate.toJSON() }}, { status: parseInt(req.query.status) }, { store: req.query.store }] },
       function(err, docs) {
         if (docs) res.send(docs);
       }
     );
   }
 
-  if(req.query.user != 0 && req.query.till != 0) {
+  if(req.query.user != 0 && req.query.store != 0) {
     transactionsDB.find(
-      { $and: [{ date: { $gte: startDate.toJSON(), $lte: endDate.toJSON() }}, { status: parseInt(req.query.status) }, { till: parseInt(req.query.till) }, { user_id: parseInt(req.query.user) }] },
+      { $and: [{ date: { $gte: startDate.toJSON(), $lte: endDate.toJSON() }}, { status: parseInt(req.query.status) }, { store: req.query.store }, { user_id: parseInt(req.query.user) }] },
       function(err, docs) {
         if (docs) res.send(docs);
       }
@@ -138,10 +138,26 @@ app.post( "/delete", function ( req, res ) {
   } );
 } );
 
+app.delete( "/delete", function ( req, res ) {
+  let transaction = req.body;
+   transactionsDB.remove( {
+       _id: transaction._id
+   }, function ( err, numRemoved ) {
+       if ( err ) res.status( 500 ).send( err );
+       else res.sendStatus( 200 );
+   } );
+ } );
 
 
 app.get("/:transactionId", function(req, res) {
   transactionsDB.find({ _id: req.params.transactionId }, function(err, doc) {
     if (doc) res.send(doc[0]);
+  });
+});
+
+app.get("/delete/all", (req, res)=>{
+  transactionsDB.remove({}, {multi: true}, (err, numRemoved)=>{
+    if(err) res.status(500).send(err);
+    else res.sendStatus(200); 
   });
 });
