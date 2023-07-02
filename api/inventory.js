@@ -2,13 +2,17 @@ const app = require( "express" )();
 const bodyParser = require( "body-parser" );
 const Datastore = require( "nedb" );
 const async = require( "async" );
-const fileUpload = require('express-fileupload');
 const multer = require("multer");
+const path = require("path");
 const fs = require('fs');
 
 
+const pathName = path.join(__dirname, '../public/uploads');
 const storage = multer.diskStorage({
-    destination: process.env.APPDATA+'/POS/uploads',
+    destination: (req, file, callback)=>{
+        callback(null, pathName);
+    },
+
     filename: function(req, file, callback){
         callback(null, Date.now() + '.jpg'); // 
     }
@@ -74,7 +78,7 @@ app.post( "/product", upload.single('imagename'), function ( req, res ) {
  
 
     if(req.body.remove == 1) {
-        const path = './resources/app/public/uploads/product_image/'+ req.body.img;
+        const path = pathName +'/'+ req.body.img;
         try {
           fs.unlinkSync(path)
         } catch(err) {

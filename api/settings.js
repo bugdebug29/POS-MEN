@@ -2,12 +2,15 @@ const app = require( "express")();
 const bodyParser = require( "body-parser" );
 const Datastore = require( "nedb" );
 const multer = require("multer");
-const fileUpload = require('express-fileupload');
+const path = require("path");
 const fs = require('fs');
 
-
+const pathName = path.join(__dirname, '../public/uploads');
 const storage = multer.diskStorage({
-    destination:  process.env.APPDATA+'/POS/uploads',
+    destination: (req, file, callback)=>{
+        callback(null, pathName);
+    },
+
     filename: function(req, file, callback){
         callback(null, Date.now() + '.jpg'); // 
     }
@@ -41,6 +44,11 @@ app.get( "/get", function ( req, res ) {
     } );
 } );
 
+app.get("/all", (req, res)=>{
+    settingsDB.find({}, (err, docs)=>{
+      res.send(docs);
+    });
+});
  
 app.post( "/post", upload.single('imagename'), function ( req, res ) {
 
@@ -55,7 +63,7 @@ app.post( "/post", upload.single('imagename'), function ( req, res ) {
     }
 
     if(req.body.remove == 1) {
-        const path = process.env.APPDATA+"/POS/uploads/"+ req.body.img;
+        const path = pathName +"/"+req.body.img; // path.join(pathName, req.file.filename)
         try {
           fs.unlinkSync(path)
         } catch(err) {
@@ -107,4 +115,9 @@ app.post( "/post", upload.single('imagename'), function ( req, res ) {
 
 });
 
- 
+app.get("/delete/all", (req, res)=>{
+    settingsDB.remove({}, {multi: true}, (err, numRemoved)=>{
+      if(err) res.status(500).send(err);
+      else res.sendStatus(200); 
+    });
+  });
