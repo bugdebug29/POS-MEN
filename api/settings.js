@@ -22,9 +22,9 @@ app.use( bodyParser.json() );
 
 module.exports = app;
 
- 
+const settingsDBPath = path.join(__dirname, '../database/settings.db'); 
 let settingsDB = new Datastore( {
-    filename: process.env.APPDATA+"/POS/server/databases/settings.db",
+    filename: settingsDBPath,
     autoload: true
 } );
 

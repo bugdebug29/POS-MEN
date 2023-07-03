@@ -2,13 +2,14 @@ const app = require( "express")();
 const bodyParser = require( "body-parser" );
 const Datastore = require( "nedb" );
 const btoa = require('btoa');
+const path = require("path");
 app.use( bodyParser.json() );
 
 module.exports = app;
 
- 
+const usersDBPath = path.join(__dirname, '../database/users.db'); 
 let usersDB = new Datastore( {
-    filename: process.env.APPDATA+"/POS/server/databases/users.db",
+    filename: usersDBPath,
     autoload: true
 } );
 

@@ -26,9 +26,9 @@ app.use(bodyParser.json());
 
 module.exports = app;
 
- 
+const inventoryDBPath = path.join(__dirname, '../database/inventory.db'); 
 let inventoryDB = new Datastore( {
-    filename: process.env.APPDATA+"/POS/server/databases/inventory.db",
+    filename: inventoryDBPath,
     autoload: true
 } );
 

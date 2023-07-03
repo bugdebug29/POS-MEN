@@ -1,15 +1,15 @@
 const app = require( "express" )();
 const bodyParser = require( "body-parser" );
 const Datastore = require( "nedb" );
-const async = require( "async" );
+const path = require("path");
 
 app.use( bodyParser.json() );
 
 module.exports = app;
 
- 
+const categoryDBPath = path.join(__dirname, '../database/customers.db');  
 let customerDB = new Datastore( {
-    filename: process.env.APPDATA+"/POS/server/databases/customers.db",
+    filename: categoryDBPath,
     autoload: true
 } );
 

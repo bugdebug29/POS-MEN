@@ -1,14 +1,15 @@
 let app = require("express")();
 let bodyParser = require("body-parser");
 let Datastore = require("nedb");
+let path = require("path");
 let Inventory = require("./inventory");
 
 app.use(bodyParser.json());
 
 module.exports = app;
- 
+const transactionsDBPath = path.join(__dirname, '../database/transactions.db'); 
 let transactionsDB = new Datastore({
-  filename: process.env.APPDATA+"/POS/server/databases/transactions.db",
+  filename: transactionsDBPath,
   autoload: true
 });
 

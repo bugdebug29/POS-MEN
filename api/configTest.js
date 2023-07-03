@@ -1,12 +1,12 @@
 const app = require( "express" )();
-const bodyParser = require( "body-parser" );
 const Datastore = require( "nedb" );
-
+const path = require("path");
 
 module.exports = app;
 
+const configDBPath = path.join(__dirname, '../database/config.db');
 let configDB = new Datastore({
-  filename: process.env.APPDATA+"/POS/server/databases/config.db",
+  filename: configDBPath,
   autoload: true
 });
 
