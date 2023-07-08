@@ -5,6 +5,9 @@ const multer = require("multer");
 const path = require("path");
 const fs = require('fs');
 
+// caching results
+let settings = undefined;
+
 const pathName = path.join(__dirname, '../public/uploads');
 const storage = multer.diskStorage({
     destination: (req, file, callback)=>{
@@ -40,6 +43,7 @@ app.get( "/get", function ( req, res ) {
     settingsDB.findOne( {
         _id: 1
 }, function ( err, docs ) {
+        settings = docs;
         res.send( docs );
     } );
 } );
@@ -96,7 +100,10 @@ app.post( "/post", upload.single('imagename'), function ( req, res ) {
     if(req.body.id == "") { 
         settingsDB.insert( Settings, function ( err, settings ) {
             if ( err ) res.status( 500 ).send( err );
-            else res.send( settings );
+            else {
+                settings = undefined;
+                res.send( settings );
+            }
         });
     }
     else { 
@@ -108,7 +115,10 @@ app.post( "/post", upload.single('imagename'), function ( req, res ) {
             settings
         ) {
             if ( err ) res.status( 500 ).send( err );
-            else res.sendStatus( 200 );
+            else {
+                settings = undefined;
+                res.send( settings );
+            }
         } );
 
     }
@@ -118,6 +128,28 @@ app.post( "/post", upload.single('imagename'), function ( req, res ) {
 app.get("/delete/all", (req, res)=>{
     settingsDB.remove({}, {multi: true}, (err, numRemoved)=>{
       if(err) res.status(500).send(err);
-      else res.sendStatus(200); 
+      else {
+        settings = undefined;
+        res.send( settings );
+      } 
     });
-  });
+});
+
+
+app.getSettings = () => {
+    return new Promise((resolve, reject) => {
+        if (settings) {
+            console.log('returning cached settings: ', settings);
+            resolve(settings);
+        }
+        else {
+            settingsDB.findOne( {
+                _id: 1
+            }, function ( err, docs ) {
+                settings = docs;
+                console.log('fetched settings: ', settings);
+                resolve(settings);
+            } );
+        }
+    });
+}; 

@@ -7,6 +7,11 @@ app.use( bodyParser.json() );
 
 module.exports = app;
 
+// for caching results
+let auth;
+let userLoggedIn;
+
+
 const usersDBPath = path.join(__dirname, '../database/users.db'); 
 let usersDB = new Datastore( {
     filename: usersDBPath,
@@ -42,16 +47,19 @@ app.get( "/logout/:userId", function ( req, res ) {
     if ( !req.params.userId ) {
         res.status( 500 ).send( "ID field is required." );
     }
-    else{ usersDB.update( {
-            _id: parseInt(req.params.userId)
-        }, {
-            $set: {
-                status: 'Logged Out_'+ new Date()
-            }
-        }, {},
-    );
-
-    res.sendStatus( 200 );
+    else{ 
+        usersDB.update( {
+                _id: parseInt(req.params.userId)
+            }, {
+                $set: {
+                    status: 'Logged Out_'+ new Date()
+                }
+            }, {}, 
+        );
+        auth = undefined;
+        userLoggedIn = undefined;
+        console.log(auth, userLoggedIn);
+        res.sendStatus( 200 );
  
     }
 });
@@ -66,20 +74,24 @@ app.post( "/login", function ( req, res ) {
 }, function ( err, docs ) {
         if(docs) {
             usersDB.update( {
-                _id: docs._id
-            }, {
-                $set: {
-                    status: 'Logged In_'+ new Date()
-                }
-            }, {},
+                    _id: docs._id
+                }, {
+                    $set: {
+                        status: 'Logged In_'+ new Date()
+                    }
+                }, {},
+            );
             
-        );
         }
-        res.send( docs );
+        let data = docs;
+        delete data.password;
+        auth = true;
+        userLoggedIn = data;
+        console.log(auth, userLoggedIn);
+        res.send( data );
     } );
     
 } );
-
 
 
 
@@ -172,3 +184,11 @@ app.get( "/check", function ( req, res ) {
     } );
 } );
  
+
+app.getAuth = ()=>{
+    return auth;
+}
+
+app.getUserLoggedIn = ()=>{
+    return userLoggedIn;
+}
