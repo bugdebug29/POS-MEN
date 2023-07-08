@@ -23,10 +23,8 @@ let order_index = 0;
 let user_index = 0;
 let product_index = 0;
 let transaction_index;
-let host = 'localhost';
-let port = 5000;
 let img_path = "/uploads/"
-let api = 'http://' + host + ':' + port + '/api/';
+let api = window.location.origin + '/api/';
 let dotInterval = setInterval(function () { $(".dot").text('.') }, 3000);
 let categories = [];
 let holdOrderList = [];
@@ -129,14 +127,14 @@ if (auth == undefined) {
 
     $.get(api + 'users/user/' + JSON.parse(user)._id, function (data) {
         user = data;
-        console.log('user fetched: ', data);
+        // console.log('user fetched: ', data);
         $('#loggedin-user').text(user.fullname);
     });
 
 
     $.get(api + 'settings/get', function (data) {
         settings = data.settings;
-        console.log('settings: ' , JSON.stringify(settings));
+        // console.log('settings: ' , JSON.stringify(settings));
     });
 
 
@@ -1618,7 +1616,7 @@ if (auth == undefined) {
             e.preventDefault();
             let formData = $(this).serializeObject();
            
-            api = 'http://' + host + ':' + port + '/api/';
+            api = window.location.origin + '/api/';
 
             formData['app'] = $('#app').find('option:selected').text();
             formData['till'] = 1;
@@ -2365,8 +2363,8 @@ $('#quit').on('click', function () {
     }).then((result) => {
 
         if (result.value) {
-            // ipcRenderer.send('app-quit', '');
-            window.location.href = 'https://google.com';
+            $(location).attr('href', 'https://www.google.com');
         }
     });
 });
+
