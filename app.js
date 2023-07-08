@@ -20,7 +20,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(logger('dev'));
 
-PORT = process.env.PORT || 5000;
+PORT = 80; //process.env.PORT || 5000;
 app.listen(PORT, ()=> { console.log(`Listening on PORT ${PORT}`) });
  
 app.use('/', indexRouter);
